@@ -139,7 +139,7 @@ rosservice call /${kinova_robotType}_driver/in/home_arm
 ### Joint position control
 Joint position control can be realized by calling KinovaComm::setJointAngles() in customized node, or you may simply call the node `joints_action_client.py` in the kinova_demo package. This function takes three parameters : `kinova_robotType` (eg. j2n6s300), `unit {degree | radian}` and `value` (angles for each joint). The function takes the option `-r` that will tell the robot if the angle values are relative or absolute. It also has the options `-v` for more verbose output and `-h` for help. The following code will drive the 6th joint of a 6DOF Jaco2 robot to rotate +10 degree (not to 10 degree), and print additional information about the joint position.
 
-\*\*eg\*\*: .* ${kinova_robotType} degree -- 0 0 0 0 0 10`
+**eg**: `rosrun kinova_demo joints_action_client.py -v -r ${kinova_robotType} degree -- 0 0 0 0 0 10`
 
 Joint position can be observed by echoing two topics:
 
@@ -164,7 +164,7 @@ Another way to control joint position is to use interactive markers in Rviz. Ple
 
 Cartesian position control can be realized by calling KinovaComm::setCartesianPosition() in customized node. Alternatively, you may simply call the node pose_action_client.py in the kinova_demo package. This function takes three parameters : `kinova_robotType` (eg. j2n6s300), `unit {mq | mdeg | mrad}` (which refers to meter&Quaternion, meter&degree and meter&radian) and `pose_value`. The last argument, `pose_value`, is the position (in coordonates x,y,z) followed by the orientation (either 3 or 4 values based on unit). The unit of position is always meter, and the unit of orientation is different. Degree and radian are in relation to Euler Angles in XYZ order. Please be aware that the length of parameters are different when using Quaternion and Euler Angles. The function takes the option `-r` that will tell the robot if the angle values are relative or absolute. It also has the options `-v` for more verbose output and `-h` for help. The following code will drive a Jaco2 robot to move along +x axis for 1cm and rotate the hand for +10 degree along hand axis.
 
-\*\*eg\*\*: .* ${kinova_robotType} mdeg -- 0.01 0 0 0 0 10`
+**eg**: `rosrun kinova_demo joints_action_client.py -v -r ${kinova_robotType} degree -- 0 0 0 0 0 10`
 
 The Cartesian coordinate of robot root frame is defined by the following rules:
 - origin is the intersection point of the bottom plane of the base and cylinder center line.    
@@ -199,7 +199,7 @@ The service `ClearTrajectories` can be used to clear the trajectory buffer in th
 ### Finger position control
 Cartesian position control can be realized by calling KinovaComm::setFingerPositions() in customized node. Alternatively, you may simply call the node `fingers_action_client.py` in the kinova_demo package. This function takes three parameters : `kinova_robotType` (eg. j2n6s300), `unit {turn | mm | percent}` and `finger_value`. The finger is essentially controlled by `turn`, and the rest units are propotional to `turn` for convenience. The value 0 indicates fully open, while `finger_maxTurn` represents fully closed. The value of `finger_maxTurn` may vary due to many factors. A proper reference value for a finger turn will be 0 (fully-open) to 6800 (fully-close). If necessary, please modify this variable in the code. The function also takes the option `-r` that will tell the robot if the angle values are relative or absolute. It also has the options `-v` for more verbose output and `-h` for help. The following code fully closes the fingers.
 
-\*\*eg\*\*: .* ${kinova_robotType} percent -- 100 100 100`
+**eg**: `rosrun kinova_demo fingers_action_client.py ${kinova_robotType} percent -- 100 100 100`
 
 The finger position is published via topic: `/${kinova_robotType}_driver/out/finger_position`
 
