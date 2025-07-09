@@ -133,13 +133,13 @@ the robot properly in Rviz, you would be able to observe the D-H frames in Rviz.
 
 If the robot is not able to move after boot, please try to home the arm by either pressing **home** button on the joystick or calling rosservice in the **ROS service commands** below.
 ```
-rosservice call /'${kinova_robotType}'_driver/in/home_arm
+rosservice call /${kinova_robotType}_driver/in/home_arm
 ```
 
 ### Joint position control
 Joint position control can be realized by calling KinovaComm::setJointAngles() in customized node, or you may simply call the node `joints_action_client.py` in the kinova_demo package. This function takes three parameters : `kinova_robotType` (eg. j2n6s300), `unit {degree | radian}` and `value` (angles for each joint). The function takes the option `-r` that will tell the robot if the angle values are relative or absolute. It also has the options `-v` for more verbose output and `-h` for help. The following code will drive the 6th joint of a 6DOF Jaco2 robot to rotate +10 degree (not to 10 degree), and print additional information about the joint position.
 
-**eg**: `rosrun kinova_demo joints_action_client.py -v -r j2n6s300 degree -- 0 0 0 0 0 10`
+\*\*eg\*\*: .* ${kinova_robotType} degree -- 0 0 0 0 0 10`
 
 Joint position can be observed by echoing two topics:
 
@@ -147,16 +147,16 @@ Joint position can be observed by echoing two topics:
 
 `/${kinova_robotType}_driver/out/joint_state` (in radians including finger information)
 
- **eg**: `rostopic echo -c /j2n6s300_driver/out/joint_state` will print out joint names (rad), position, velocity (rad/s) and effort (Nm) information.
+ **eg**: `rostopic echo -c /${kinova_robotType}_driver/out/joint_state` will print out joint names (rad), position, velocity (rad/s) and effort (Nm) information.
 
 Another way to control joint position is to use interactive markers in Rviz. Please follow the steps below to active interactive control:
   1. launch the drivers: `roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType}`
-  2. start the node of interactive conrol: `rosrun kinova_driver kinova_interactive_control j2n6s300`
+  2. start the node of interactive conrol: `rosrun kinova_driver kinova_interactive_control ${kinova_robotType}`
   3. open Rviz: `rosrun rviz rviz`
   4. in RViz (in the display section) change **Global Options** -> **Fixed Frame** to `world`
   5. add robot's model with **Add** -> **RobotModel** (in rviz folder)
   6. add interactive markers with **Add** -> **InteractiveMarkers** (in rviz folder)
-  7. change **InteractiveMarkers** -> **Updated Topic** to `/j2n6s300_interactive_control_Cart/update`
+  7. change **InteractiveMarkers** -> **Updated Topic** to `/${kinova_robotType}_interactive_control_Cart/update`
 
   - A ring should appear around each joint, you can move the robot by movings those rings.
 
@@ -164,7 +164,7 @@ Another way to control joint position is to use interactive markers in Rviz. Ple
 
 Cartesian position control can be realized by calling KinovaComm::setCartesianPosition() in customized node. Alternatively, you may simply call the node pose_action_client.py in the kinova_demo package. This function takes three parameters : `kinova_robotType` (eg. j2n6s300), `unit {mq | mdeg | mrad}` (which refers to meter&Quaternion, meter&degree and meter&radian) and `pose_value`. The last argument, `pose_value`, is the position (in coordonates x,y,z) followed by the orientation (either 3 or 4 values based on unit). The unit of position is always meter, and the unit of orientation is different. Degree and radian are in relation to Euler Angles in XYZ order. Please be aware that the length of parameters are different when using Quaternion and Euler Angles. The function takes the option `-r` that will tell the robot if the angle values are relative or absolute. It also has the options `-v` for more verbose output and `-h` for help. The following code will drive a Jaco2 robot to move along +x axis for 1cm and rotate the hand for +10 degree along hand axis.
 
-**eg**: `rosrun kinova_demo pose_action_client.py -v -r j2n6s300 mdeg -- 0.01 0 0 0 0 10`
+\*\*eg\*\*: .* ${kinova_robotType} mdeg -- 0.01 0 0 0 0 10`
 
 The Cartesian coordinate of robot root frame is defined by the following rules:
 - origin is the intersection point of the bottom plane of the base and cylinder center line.    
@@ -180,12 +180,12 @@ In addition, the wrench of end-effector is published via topic: `/${kinova_robot
 
 Again, you can also use interactive markers in Rviz for Cartesian position :
   1. launch the drivers: `roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType}`
-  2. start the node of interactive conrol: `rosrun kinova_driver kinova_interactive_control j2n6s300`
+  2. start the node of interactive conrol: `rosrun kinova_driver kinova_interactive_control ${kinova_robotType}`
   3. open Rviz: `rosrun rviz rviz`
   4. in RViz (in the display section) change **Global Options** -> **Fixed Frame** to `world`
   5. add robot's model with **Add** -> **RobotModel** (in rviz folder)
   6. add interactive markers with **Add** -> **InteractiveMarkers** (in rviz folder)
-  7. change **InteractiveMarkers** -> **Updated Topic** to `/j2n6s300_interactive_control_Cart/update`
+  7. change **InteractiveMarkers** -> **Updated Topic** to `/${kinova_robotType}_interactive_control_Cart/update`
 
   - A cubic with 3 axis (translation) and 3 rings(rotation) should appear at the end-effector, you can move the robot by dragging the axis or rings.
 
@@ -199,18 +199,18 @@ The service `ClearTrajectories` can be used to clear the trajectory buffer in th
 ### Finger position control
 Cartesian position control can be realized by calling KinovaComm::setFingerPositions() in customized node. Alternatively, you may simply call the node `fingers_action_client.py` in the kinova_demo package. This function takes three parameters : `kinova_robotType` (eg. j2n6s300), `unit {turn | mm | percent}` and `finger_value`. The finger is essentially controlled by `turn`, and the rest units are propotional to `turn` for convenience. The value 0 indicates fully open, while `finger_maxTurn` represents fully closed. The value of `finger_maxTurn` may vary due to many factors. A proper reference value for a finger turn will be 0 (fully-open) to 6800 (fully-close). If necessary, please modify this variable in the code. The function also takes the option `-r` that will tell the robot if the angle values are relative or absolute. It also has the options `-v` for more verbose output and `-h` for help. The following code fully closes the fingers.
 
-**eg**: `rosrun kinova_demo fingers_action_client.py j2n6s300 percent -- 100 100 100`
+\*\*eg\*\*: .* ${kinova_robotType} percent -- 100 100 100`
 
 The finger position is published via topic: `/${kinova_robotType}_driver/out/finger_position`
 
 ### Velocity Control for joint space and Cartesian space
 The user has access to both joint velocity and Cartesian velocity (angular velocity and linear velocity). The joint velocity control can be realized by publishing to topic  `/${kinova_robotType}_driver/in/joint_velocity`. The following command can move the 6th joint of a Jaco robot at a rate of approximate 10 degree/second. Please be aware that the publishing rate **does** affect the speed of motion.
 
-**eg**: `rostopic pub -r 100 /j2n6s300_driver/in/joint_velocity kinova_msgs/JointVelocity "{joint1: 0.0, joint2: 0.0, joint3: 0.0, joint4: 0.0, joint5: 0.0, joint6: 10.0}" ` 
+**eg**: `rostopic pub -r 100 /${kinova_robotType}_driver/in/joint_velocity kinova_msgs/JointVelocity "{joint1: 0.0, joint2: 0.0, joint3: 0.0, joint4: 0.0, joint5: 0.0, joint6: 10.0}" ` 
 
 For Cartesian linear velocity, the unit is meter/second. Definition of angular velocity "Omega" is based on the skew-symmetric matrices "S = R*R^(-1)", where "R" is the rotation matrix. angular velocity vector "Omega = [S(3,2); S(1,3); S(2,1)]". The unit is radian/second.  An example is given below:
 
-**eg**: `rostopic pub -r 100 /j2n6s300_driver/in/cartesian_velocity kinova_msgs/PoseVelocity "{twist_linear_x: 0.0, twist_linear_y: 0.0, twist_linear_z: 0.0, twist_angular_x: 0.0, twist_angular_y: 0.0, twist_angular_z: 10.0}" `
+**eg**: `rostopic pub -r 100 /${kinova_robotType}_driver/in/cartesian_velocity kinova_msgs/PoseVelocity "{twist_linear_x: 0.0, twist_linear_y: 0.0, twist_linear_z: 0.0, twist_angular_x: 0.0, twist_angular_y: 0.0, twist_angular_z: 10.0}" `
 
 The motion will stop once the publish on the topic is finished. Please be cautious when using velocity control as it is a continuous motion unless you stop it.
 
@@ -267,13 +267,13 @@ SetTorqueControlParameters `${kinova_robotType}_driver/in/set_torque_control_par
 2. Switch to torque control from position control  
 You can do this using the service  - SetTorqueControlMode `${kinova_robotType}_driver'/in/set_torque_control_mode`
 
-3. Publish torque commands `rostopic pub -r 100 /j2n6s300_driver/in/joint_torque kinova_msgs/JointTorque "{joint1: 0.0, joint2: 0.0, joint3: 0.0, joint4: 0.0, joint5: 0.0, joint6: 1.0}"`
+3. Publish torque commands `rostopic pub -r 100 /${kinova_robotType}_driver/in/joint_torque kinova_msgs/JointTorque "{joint1: 0.0, joint2: 0.0, joint3: 0.0, joint4: 0.0, joint5: 0.0, joint6: 1.0}"`
 
 ##### Gravity compensation
 Gravity compensation is done by default in the robot's base. This means that if the robot is commanded zero torques the robot does not fall under gravity. This case (zero commanded torque) 
 can be refered to as `gravity compensated mode`. The robot can be moved around freely by manually pushing its joints. You can try out this mode by using the command (for a j2n6s300)
 ```
-rosrun kinova_demo gravity_compensated_mode.py j2n6s300 
+rosrun kinova_demo gravity_compensated_mode.py ${kinova_robotType} 
 ```
 This command moves the robot to a candle-like pose, sets torques to zero, and then starts torque control mode. It publishes torque commands as `[0,0,0,0,0,0]`, so the robot can be moved by pushing on individual joints.
 

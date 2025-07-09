@@ -76,7 +76,7 @@ To move the robot in Gazebo using the trajectory controller user can publish joi
 /robot_name/effort_joint_trajectory_controller/command. An example script is available to move the robot to home position.
 
 ```
-rosrun kinova_control move_robot.py j2n6s300
+rosrun kinova_control move_robot.py ${kinova_robotType}
 ```
 
 The robot can also be commanded joint by joint through rqt (you can also add the argument `rqt:=true` when initialy launching Gazebo to launch rqt automatically) - 
@@ -97,7 +97,7 @@ roslaunch kinova_gazebo robot_launch.launch kinova_robotType:=${kinova_robotType
 Next launch moveIt and RViz -
 
 ```
-roslaunch j2n6s300_moveit_config j2n6s300_gazebo_demo.launch
+roslaunch ${kinova_robotType}_moveit_config ${kinova_robotType}_gazebo_demo.launch
 ```
 
 You can use the interactive markers in rviz to plan trajectories and when you click execute
