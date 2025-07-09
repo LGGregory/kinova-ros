@@ -51,7 +51,7 @@ You can also launch MoveIt with Gazebo and ros_control.
  
 ### With virtual robot (MoveIt Fake Controller) 
 ```
-roslaunch <robot_name>_moveit_config <robot_name>_virtual_robot_demo.launch
+roslaunch ${kinova_robotType}_moveit_config ${kinova_robotType}_virtual_robot_demo.launch
 ```
 
 For eg, for Jaco robot -
@@ -72,13 +72,13 @@ This configuration will let you play with the virtual robot and test your MoveIt
 ### With actual robot connected
 
 ```
-roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=*robot_type*
+roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType}
 ```
 
 Launches the kinova_driver node to control the arm.
 
 ```
-roslaunch <robot_name>_moveit_config <robot_name>_demo.launch
+roslaunch ${kinova_robotType}_moveit_config ${kinova_robotType}_demo.launch
 ```
 
 Launches the - 
@@ -120,13 +120,13 @@ MoveIt repository has examples for using its API. A pick and place demo has been
 To run the demo, launch moveIt and RViz -
 
 ```
-roslaunch <robot_name>_moveit_config <robot_name>_virtual_robot_demo.launch
+roslaunch ${kinova_robotType}_moveit_config ${kinova_robotType}_virtual_robot_demo.launch
 ```
 
 or with real robot connected (Warning - this sequence takes a lot of space, make sure the robot has enough space and be ready to turn off the robot if need be) - 
 
 ```
-roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=*robot_type*
+roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType}
 roslaunch robot_name_moveit_config robot_name_demo.launch
 ```
 

@@ -51,7 +51,7 @@ Recommended way to control the robot is to use trajectory controller.
 You can launch Gazebo using the launch file -
  
 ```
-roslaunch kinova_gazebo robot_launch.launch kinova_robotType:=j2n6s300
+roslaunch kinova_gazebo robot_launch.launch kinova_robotType:=${kinova_robotType}
 ```
 
 The launch file -
@@ -68,7 +68,7 @@ By default the controller is set to launch a trajectory position controller, thi
 If you would like to control the joint by joint, set use_trajectory_controller = false
 
 ```
-roslaunch kinova_gazebo robot_launch.launch kinova_robotType:=j2n6s300 use_trajectory_controller:=false
+roslaunch kinova_gazebo robot_launch.launch kinova_robotType:=${kinova_robotType} use_trajectory_controller:=false
 ```
 
 ### Moving the robot
@@ -82,7 +82,7 @@ rosrun kinova_control move_robot.py j2n6s300
 The robot can also be commanded joint by joint through rqt (you can also add the argument `rqt:=true` when initialy launching Gazebo to launch rqt automatically) - 
 
 ```
-roslaunch kinova_control kinova_rqt.launch kinova_robotType:=j2n6s300 
+roslaunch kinova_control kinova_rqt.launch kinova_robotType:=${kinova_robotType} 
 ```
 
 For this however, set use_trajectory_controller = false as explained above.
@@ -91,7 +91,7 @@ For this however, set use_trajectory_controller = false as explained above.
 First launch Gazebo - 
 
 ```
-roslaunch kinova_gazebo robot_launch.launch kinova_robotType:=j2n6s300
+roslaunch kinova_gazebo robot_launch.launch kinova_robotType:=${kinova_robotType}
 ```
 
 Next launch moveIt and RViz -

@@ -111,8 +111,8 @@ For applications like **moveIt!** set kinova_robotName to your prefix for the ro
 For example you can launch two jaco robots by using the following - 
 
 ```
-roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=j2n6s300 kinova_robotName:=left kinova_robotSerial:=PJ00000001030703130
-roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=j2n6s300 kinova_robotName:=right kinova_robotSerial:=PJ00000001030703133
+roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType} kinova_robotName:=left kinova_robotSerial:=PJ00000001030703130
+roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType} kinova_robotName:=right kinova_robotSerial:=PJ00000001030703133
 ```
 
 These parameters are optional and can be dropped off when only one robot is connected.
@@ -129,7 +129,7 @@ Node `kinova_tf_updater` will be activated to publish frames, and the frames are
 according the classic D-H convention(frame may not located at joints). Even you are not able to visualize
 the robot properly in Rviz, you would be able to observe the D-H frames in Rviz.
 
-**eg**: `roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=j2n6s300 use_urdf:=true`
+**eg**: `roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType} use_urdf:=true`
 
 If the robot is not able to move after boot, please try to home the arm by either pressing **home** button on the joystick or calling rosservice in the **ROS service commands** below.
 ```
@@ -143,14 +143,14 @@ Joint position control can be realized by calling KinovaComm::setJointAngles() i
 
 Joint position can be observed by echoing two topics:
 
-`/'${kinova_robotType}_driver'/out/joint_angles` (in degree) and 
+`/${kinova_robotType}_driver/out/joint_angles` (in degree) and 
 
-`/'${kinova_robotType}_driver'/out/joint_state` (in radians including finger information)
+`/${kinova_robotType}_driver/out/joint_state` (in radians including finger information)
 
  **eg**: `rostopic echo -c /j2n6s300_driver/out/joint_state` will print out joint names (rad), position, velocity (rad/s) and effort (Nm) information.
 
 Another way to control joint position is to use interactive markers in Rviz. Please follow the steps below to active interactive control:
-  1. launch the drivers: `roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=j2n6s300`
+  1. launch the drivers: `roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType}`
   2. start the node of interactive conrol: `rosrun kinova_driver kinova_interactive_control j2n6s300`
   3. open Rviz: `rosrun rviz rviz`
   4. in RViz (in the display section) change **Global Options** -> **Fixed Frame** to `world`
@@ -174,12 +174,12 @@ The Cartesian coordinate of robot root frame is defined by the following rules:
 
 The kinova_tool_pose_action (action server called by `pose_action_client.py`) will send Cartesian position commands to the robot and the inverse kinematics will be handled within the robot. **Important** The inverse kinematics algorithm that is implemented within Kinova robots is programmed to automatically avoid singularities and self-collisions. To perform those avoidance, the algorithm will restrict access to some parts of the robot's workspace. It may happen that the Cartesian pose goal you send cannot be reached by the robot, although it belongs to the robot's workspace. For more details on why this can happen, and what can you do to avoid this situation, please see the Q & A in [issue #149](https://github.com/Kinovarobotics/kinova-ros/issues/149). As a rule of thumb, if you are not able to reach the pose you are commanding in `pose_action_client.py` by moving your Kinova robot with the Kinova joystick, the robot will not be able to reach this same pose with the action server either. If you do not want to use the robot's IK solver, you can always use MoveIt instead. 
 
-The current Cartesian position is published via topic: `/'${kinova_robotType}_driver'/out/tool_pose`
+The current Cartesian position is published via topic: `/${kinova_robotType}_driver/out/tool_pose`
 
-In addition, the wrench of end-effector is published via topic: `/'${kinova_robotType}_driver'/out/tool_wrench`
+In addition, the wrench of end-effector is published via topic: `/${kinova_robotType}_driver/out/tool_wrench`
 
 Again, you can also use interactive markers in Rviz for Cartesian position :
-  1. launch the drivers: `roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=j2n6s300`
+  1. launch the drivers: `roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=${kinova_robotType}`
   2. start the node of interactive conrol: `rosrun kinova_driver kinova_interactive_control j2n6s300`
   3. open Rviz: `rosrun rviz rviz`
   4. in RViz (in the display section) change **Global Options** -> **Fixed Frame** to `world`
@@ -201,10 +201,10 @@ Cartesian position control can be realized by calling KinovaComm::setFingerPosit
 
 **eg**: `rosrun kinova_demo fingers_action_client.py j2n6s300 percent -- 100 100 100`
 
-The finger position is published via topic: `/'${kinova_robotType}_driver'/out/finger_position`
+The finger position is published via topic: `/${kinova_robotType}_driver/out/finger_position`
 
 ### Velocity Control for joint space and Cartesian space
-The user has access to both joint velocity and Cartesian velocity (angular velocity and linear velocity). The joint velocity control can be realized by publishing to topic  `/'${kinova_robotType}_driver'/in/joint_velocity`. The following command can move the 6th joint of a Jaco robot at a rate of approximate 10 degree/second. Please be aware that the publishing rate **does** affect the speed of motion.
+The user has access to both joint velocity and Cartesian velocity (angular velocity and linear velocity). The joint velocity control can be realized by publishing to topic  `/${kinova_robotType}_driver/in/joint_velocity`. The following command can move the 6th joint of a Jaco robot at a rate of approximate 10 degree/second. Please be aware that the publishing rate **does** affect the speed of motion.
 
 **eg**: `rostopic pub -r 100 /j2n6s300_driver/in/joint_velocity kinova_msgs/JointVelocity "{joint1: 0.0, joint2: 0.0, joint3: 0.0, joint4: 0.0, joint5: 0.0, joint6: 10.0}" ` 
 
@@ -220,19 +220,19 @@ Therefore, the publishing rate at 100Hz is not an optional argument, but a requi
 
 ### ROS service commands
 Users can home the robot with the command below. It takes no argument and brings the robot to pre-defined home position. The command supports customized home position that users can define by using the SDK or JacoSoft as well.
-`rosservice call /'${kinova_robotType}_driver'/in/home_arm`
+`rosservice call /${kinova_robotType}_driver/in/home_arm`
 
 Users can also enable and disable the ROS motion commands with these rosservices :
-`rosservice call /'${kinova_robotType}_driver'/in/start`
-`/'${kinova_robotType}_driver'/in/stop`
+`rosservice call /${kinova_robotType}_driver/in/start`
+`/${kinova_robotType}_driver/in/stop`
 When `stop` is called, robot commands from ROS will not drive the robot until `start` is called. However, the joystick still has the control during this phase.
 
 ### Cartesian Admittance mode 
 This lets the user control the robot by manually (by hand).
 The admittance force control can be actived and deactivated with these commands :
 ```
-rosservice call /'${kinova_robotType}_driver'/in/start_force_control
-rosservice call /'${kinova_robotType}_driver'/in/stop_force_control
+rosservice call /${kinova_robotType}_driver/in/start_force_control
+rosservice call /${kinova_robotType}_driver/in/stop_force_control
 ```
 The user can move the robot by applying force/torque to the end-effector/joints. When there is a Cartesian/joint position command, the result motion will be a combination of both force and position commands.
 
@@ -241,7 +241,7 @@ The user can move the robot by applying force/torque to the end-effector/joints.
 #### New in release 1.2.0
 Over time it is possible that the torque sensors develop offsets in reporting absolute torque. For this they need to be re-calibrated. The calibration process is very simple -   
 1. Move the robot to candle like pose (all joints 180 deg, robot links points straight up). This configuration ensures zero torques at joints.  
-2. Call the service `rosservice call /'${kinova_robotType}_driver'/in/set_zero_torques`
+2. Call the service `rosservice call /${kinova_robotType}_driver/in/set_zero_torques`
 
 ### Support for 7 dof spherical wrist robot
 #### New in release 1.2.0 
